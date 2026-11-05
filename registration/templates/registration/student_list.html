@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Directory</title>
+
+    <link rel="stylesheet" href="{% static 'registration/style.css' %}">
+</head>
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f1f5fb;
+    margin: 0;
+    padding: 35px;
+    color: #263445;
+}
+
+/* Page heading */
+h1 {
+    color: #174a7e;
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 30px;
+}
+
+/* Main content */
+form {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 950px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* Search field */
+input[type="text"] {
+    width: 65%;
+    max-width: 450px;
+    padding: 12px 15px;
+    border: 1px solid #d5deea;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+}
+
+input[type="text"]:focus {
+    border-color: #2878bd;
+}
+
+/* Buttons */
+button {
+    background: #2469a6;
+    color: white;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #174a7e;
+}
+
+/* Links */
+a {
+    color: #2469a6;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Register link */
+/* Center Register New Student button */
+body > p:has(a[href*="create"]) {
+    text-align: center;
+    margin: 20px auto;
+}
+
+a[href*="create"] {
+    display: inline-block;
+    background: #16865c;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+a[href*="create"]:hover {
+    background: #106b49;
+    text-decoration: none;
+}
+
+/* Student table */
+table {
+    width: 100%;
+    max-width: 1100px;
+    margin: 25px auto;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+th {
+    background: #2469a6;
+    color: white;
+    padding: 15px;
+    text-align: left;
+}
+
+td {
+    padding: 14px 15px;
+    border-bottom: 1px solid #e8edf3;
+}
+
+tr:hover td {
+    background: #f5f9fd;
+}
+
+/* Action links */
+td a {
+    display: inline-block;
+    padding: 7px 11px;
+    border-radius: 6px;
+    margin: 2px;
+    font-size: 13px;
+}
+
+td a[href*="students"] {
+    background: #e7f1fb;
+}
+
+/* Back to home */
+body > p:last-child {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+    body {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    form {
+        padding: 15px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    th, td {
+        padding: 9px 6px;
+    }
+}
+
+</style>
+<body>
+
+    <h1>Student Directory</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <p>
+        <a href="{% url 'student_create' %}">
+            Register New Student
+        </a>
+    </p>
+
+    <form method="get">
+        <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            placeholder="Search ID or name"
+        >
+        <button type="submit">Search</button>
+        <a href="{% url 'student_list' %}">Clear</a>
+    </form>
+
+    <hr>
+
+    {% if students %}
+        <table border="1" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Gender</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.first_name }}</td>
+                        <td>{{ student.last_name }}</td>
+                        <td>{{ student.gender }}</td>
+                        <td>
+                            <a href="{% url 'student_detail' student.pk %}">
+                                View
+                            </a>
+                            |
+                            <a href="{% url 'student_update' student.pk %}">
+                                Edit
+                            </a>
+                            |
+                            <a href="{% url 'student_delete' student.pk %}">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        <p>No Student records found.</p>
+    {% endif %}
+
+    <p>
+        <a href="{% url 'home' %}">Back to Home</a>
+    </p>
+
+</body>
+</html>

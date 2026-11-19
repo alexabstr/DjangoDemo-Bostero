@@ -1,11 +1,14 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.db.models import Q
 
 from .models import Student
 from .forms import StudentForm
 
+def staff_check(user):
+    return user.is_authenticated and user.is_staff
 
 # ORIGINAL MODULE 06 REGISTRATION
 def student_registration(request):
@@ -36,6 +39,7 @@ def registration_success(request):
 
 
 # ACTIVITY 3: STUDENT DIRECTORY
+@user_passes_test(staff_check, login_url='login')
 def student_list(request):
     query = request.GET.get('q', '').strip()
 
@@ -61,6 +65,7 @@ def student_list(request):
 
 
 # ACTIVITY 4: STUDENT DETAIL
+@user_passes_test(staff_check, login_url='login')
 def student_detail(request, pk):
     student = get_object_or_404(Student, pk=pk)
 
@@ -72,6 +77,7 @@ def student_detail(request, pk):
 
 
 # ACTIVITY 5: CREATE STUDENT
+@user_passes_test(staff_check, login_url='login')
 def student_create(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -94,6 +100,7 @@ def student_create(request):
 
 
 # ACTIVITY 5: UPDATE STUDENT
+@user_passes_test(staff_check, login_url='login')
 def student_update(request, pk):
     student = get_object_or_404(Student, pk=pk)
 
@@ -119,6 +126,7 @@ def student_update(request, pk):
 
 
 # ACTIVITY 6: SAFE DELETE
+@user_passes_test(staff_check, login_url='login')
 def student_delete(request, pk):
     student = get_object_or_404(Student, pk=pk)
 
@@ -131,4 +139,16 @@ def student_delete(request, pk):
         request,
         'registration/student_confirm_delete.html',
         {'student': student}
+    )
+
+# ACTIVITY 6: STAFF DASHBOARD
+def staff_check(user):
+    return user.is_authenticated and user.is_staff
+
+
+@user_passes_test(staff_check, login_url='login')
+def staff_dashboard(request):
+    return render(
+        request,
+        'registration/dashboard.html'
     )
